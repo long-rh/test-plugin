@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>デモアドイン</title>
+    <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+    <style>
+        body {
+            font-family: "Segoe UI", "Meiryo", sans-serif;
+            margin: 0;
+            padding: 24px;
+            color: #333;
+            background: #f9f9f9;
+        }
+        h1 {
+            font-size: 18px;
+            margin: 0 0 8px;
+        }
+        p {
+            font-size: 13px;
+            color: #666;
+            margin: 0 0 20px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #fff;
+            background: #217346;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #1a5c38;
+        }
+        #status {
+            margin-top: 16px;
+            font-size: 13px;
+            color: #217346;
+            min-height: 18px;
+        }
+    </style>
+</head>
+<body>
+    <h1>デモアドイン 🎉</h1>
+    <p>下のボタンを押すと、選択中のセルに文字を入れます。</p>
+
+    <button id="run-button">セルに「こんにちは！」を入れる</button>
+
+    <div id="status"></div>
+
+    <script>
+        // Office.js の準備ができたらボタンを有効化
+        Office.onReady(function (info) {
+            if (info.host === Office.HostType.Excel) {
+                document.getElementById("run-button").onclick = writeToCell;
+            }
+        });
+
+        async function writeToCell() {
+            try {
+                await Excel.run(async (context) => {
+                    // 現在選択されているセルを取得
+                    const range = context.workbook.getSelectedRange();
+                    range.values = [["こんにちは！"]];
+                    range.format.autofitColumns();
+                    await context.sync();
+
+                    document.getElementById("status").textContent = "✅ 入力しました！";
+                });
+            } catch (error) {
+                document.getElementById("status").textContent = "エラー: " + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
